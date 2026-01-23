@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from api.reqs import buscar_partidas_passadas, buscar_proximas_partidas, buscar_partidas_ao_vivo
+from api.reqs import buscar_partidas_passadas, buscar_proximas_partidas, buscar_partidas_ao_vivo, torneios_cs, buscar_torneio, buscar_time
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -22,6 +22,43 @@ def ao_vivo():
 def passadas():
     dados = buscar_partidas_passadas()
     return render_template('matches.html', matches=dados, titulo="Partidas Passadas")
+
+@app.route('/torneios')
+def torneios():
+    dados = torneios_cs()
+    
+    torneios_unicos = []
+    nomes_vistos = set()
+
+    for t in dados:
+      
+        chave = f"{t['league']['name']} - {t['serie']['full_name']}"
+        
+        if chave not in nomes_vistos:
+            torneios_unicos.append(t)
+            nomes_vistos.add(chave)
+
+    return render_template('tournaments.html', matches=torneios_unicos, titulo="Torneios")
+
+@app.route('/torneio/<int:tournament_id>')
+def detalhes_torneio(tournament_id):
+    dados = buscar_torneio(tournament_id)
+    
+    if not dados:
+        return "Torneio não encontrado", 404
+
+    return render_template('tournament_details.html', tournament=dados)
+
+
+@app.route('/time/<int:team_id>')
+def detalhes_time(team_id):
+    dados = buscar_time(team_id)
+    
+    if not dados:
+        return "Time não encontrado", 404
+
+    return render_template('team_details.html', team=dados)
+
 
 @app.template_filter('br_time')
 def br_time(value):
