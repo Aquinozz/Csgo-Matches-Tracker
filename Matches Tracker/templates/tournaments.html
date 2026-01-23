@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <header style="text-align: center; margin: 40px 0;">
+        <h1 style="color: #fff; font-size: 2.2rem; margin-bottom: 8px;">{{ titulo }}</h1>
+        <p style="color: var(--text-dim); font-size: 1.1rem;">Ligas e Séries Oficiais de Counter-Strike 2</p>
+    </header>
+
+    <div class="tournaments-grid">
+        {% for tournament in matches %}
+        <a href="{{ url_for('detalhes_torneio', tournament_id=tournament.id) }}" style="text-decoration: none; color: inherit; display: block;">
+            <div class="match-card">
+                
+                <div class="league-info">
+                    <div class="logo-wrapper">
+                        <img src="{{ tournament.league.image_url }}" alt="Logo Liga" onerror="this.style.opacity='0'">
+                    </div>
+                    <span>{{ tournament.league.name }}</span>
+                </div>
+
+                <div class="match-main" style="grid-template-columns: 1fr; text-align: center;">
+                    <div class="team">
+                        
+                        <h3 style="color: var(--primary); font-size: 1.3rem; margin-bottom: 10px;">
+                            {{ tournament.serie.full_name if tournament.serie else 'Série não informada' }}
+                        </h3>
+                        
+                        <div class="match-status">
+                            {# Lógica baseada em comparação de campos existentes #}
+                            {% if tournament.live_supported and tournament.status|lower != 'past' %}
+                                <span class="vs-text" style="background: rgba(255, 70, 85, 0.1); color: var(--accent); border: 1px solid var(--accent);">
+                                    ● EM ADAMENTO
+                                </span>
+                            {% elif tournament.end_at and tournament.status|lower == 'past' %}
+                                <span class="vs-text" style="background: rgba(139, 148, 158, 0.1); color: var(--text-dim); border: 1px solid var(--border);">
+                                    FINALIZADO EM: {{ tournament.end_at | br_time }}
+                                </span>
+                            {% else %}
+                                <span class="vs-text" style="background: rgba(88, 166, 255, 0.1); color: var(--primary); border: 1px solid var(--primary);">
+                                    INÍCIO: {{ tournament.begin_at | br_time }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid var(--border); width: 80%; margin-left: auto; margin-right: auto;">
+                            <p style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px;">
+                                Fase Atual: <span style="color: var(--text-main);">{{ tournament.name }}</span>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <div style="text-align: center; padding: 60px;">
+            <p style="color: var(--text-dim);">Nenhum torneio disponível no momento.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
