@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px;">
+    <a href="{{ url_for('torneios') }}" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: bold;">
+        ← VOLTAR PARA TORNEIOS
+    </a>
+
+    <div class="match-card" style="margin-top: 20px; padding: 40px; text-align: center;">
+        <div style="width: 100px; height: 100px; margin: 0 auto 20px auto; background: var(--bg-color); padding: 10px; border-radius: 20px; border: 1px solid var(--border);">
+            <img src="{{ tournament.league.image_url if tournament.league else tournament.serie.image_url }}" 
+                 style="width: 100%; height: 100%; object-fit: contain;" 
+                 onerror="this.src='https://via.placeholder.com/100?text=CS2'">
+        </div>
+        
+        <h1 style="color: #fff; margin-bottom: 5px;">
+            {{ tournament.league.name if tournament.league else 'Torneio' }}
+        </h1>
+
+        <h2 style="color: var(--primary); font-size: 1.5rem; margin-bottom: 20px;">
+            {{ tournament.serie.full_name if tournament.serie else tournament.name }}
+        </h2>
+    </div>
+
+    <div style="margin-top: 40px;">
+        <h3 style="color: #fff; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 15px;">
+            Equipes Participantes
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+            {% set equipes = tournament.teams if tournament.teams else tournament.participants %}
+            
+            {% for equipe in equipes %}
+            <a href="{{ url_for('detalhes_time', team_id=equipe.id) }}" style="text-decoration: none; color: inherit;">
+                <div class="match-card" style="padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s;">
+                    <div style="width: 60px; height: 60px; margin: 0 auto 10px auto;">
+                        <img src="{{ equipe.image_url }}" 
+                             style="width: 100%; height: 100%; object-fit: contain;" 
+                             onerror="this.src='https://via.placeholder.com/60?text=Team'">
+                    </div>
+                    <p style="color: #fff; font-weight: bold; margin-bottom: 2px;">
+                        {{ equipe.name }}
+                    </p>
+                    <p style="color: var(--text-dim); font-size: 0.75rem; margin: 0;">
+                        {{ equipe.acronym if equipe.acronym else 'CS2' }}
+                    </p>
+                </div>
+            </a>
+            {% else %}
+            <div style="grid-column: 1/-1; text-align: center; padding: 30px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px dashed var(--border);">
+                <p style="color: var(--text-dim); margin: 0;">
+                    Lista de equipes participantes ainda não definida.
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container" style="padding-top: 40px;">
+    <a href="javascript:history.back()" style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: bold;">
+        ← VOLTAR
+    </a>
+
+    <div class="match-card" style="margin-top: 20px; padding: 40px; text-align: center;">
+        <div style="width: 120px; height: 120px; margin: 0 auto 20px auto; background: var(--bg-color); padding: 15px; border-radius: 50%; border: 2px solid var(--primary);">
+            <img src="{{ team.image_url }}" style="width: 100%; height: 100%; object-fit: contain;" onerror="this.src='https://via.placeholder.com/120?text=Team'">
+        </div>
+        
+        <h1 style="color: #fff; margin-bottom: 5px;">{{ team.name }}</h1>
+        <p style="color: var(--primary); font-size: 1.2rem; font-weight: bold;">{{ team.acronym }}</p>
+        <p style="color: var(--text-dim);">País: {{ team.location if team.location else 'Não informado' }}</p>
+    </div>
+
+    <div style="margin-top: 40px;">
+        <h3 style="color: #fff; margin-bottom: 20px; border-left: 4px solid var(--primary); padding-left: 15px;">Line-up Atual</h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            {% for player in team.players %}
+            <div class="match-card" style="padding: 20px; text-align: center; background: rgba(255,255,255,0.02);">
+                <div style="width: 80px; height: 80px; margin: 0 auto 15px auto; border-radius: 50%; overflow: hidden; background: var(--bg-color); border: 1px solid var(--border);">
+                    <img src="{{ player.image_url }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='https://via.placeholder.com/80?text=Player'">
+                </div>
+                <p style="color: var(--primary); font-weight: bold; font-size: 1.1rem; margin-bottom: 2px;">{{ player.name }}</p>
+                <p style="color: #fff; font-size: 0.85rem; margin-bottom: 5px;">{{ player.first_name }} {{ player.last_name }}</p>
+                <span style="font-size: 0.7rem; color: var(--text-dim); background: rgba(255,255,255,0.05); padding: 3px 8px; border-radius: 4px;">
+                    {{ player.role if player.role else 'Player' }}
+                </span>
+            </div>
+            {% else %}
+            <p style="color: var(--text-dim);">Nenhum jogador registrado no momento.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
