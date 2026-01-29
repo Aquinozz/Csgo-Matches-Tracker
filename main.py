@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from api.reqs import buscar_partidas_passadas, buscar_proximas_partidas, buscar_partidas_ao_vivo, torneios_cs, buscar_torneio, buscar_time
 from datetime import datetime, timedelta
 
@@ -58,6 +58,22 @@ def detalhes_time(team_id):
         return "Time não encontrado", 404
 
     return render_template('team_details.html', team=dados)
+
+
+@app.route('/api/buscar-times')
+def api_buscar_times():
+    nome_time = request.args.get('nome', '').strip()
+    
+    if not nome_time or len(nome_time) < 2:
+        return jsonify({'times': [], 'erro': 'Digite pelo menos 2 caracteres'})
+    
+    try:
+        
+        from api.reqs import buscar_times_por_nome
+        times = buscar_times_por_nome(nome_time)
+        return jsonify({'times': times})
+    except Exception as e:
+        return jsonify({'times': [], 'erro': str(e)})
 
 
 @app.template_filter('br_time')

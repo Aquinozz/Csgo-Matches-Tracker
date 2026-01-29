@@ -50,3 +50,41 @@ def buscar_time(team_id):
     if response.status_code == 200:
         return response.json()
     return None
+def buscar_times_por_nome(nome_time):
+    """Busca times por nome na API PandaScore"""
+    try:
+        # Usar o endpoint de times com filtro de search
+        response = requests.get(
+            f"https://api.pandascore.co/teams",
+            headers=get_headers(),
+            params={
+                "search[name]": nome_time,
+                "per_page": 20
+            }
+        )
+        
+        if response.status_code == 200:
+            times = response.json()
+            # Filtrar e formatar os dados dos times
+            times_formatados = []
+            for time in times:
+                # Extrair país de diferentes campos possíveis
+                pais = (
+                    time.get('country') or 
+                    time.get('location') or 
+                    time.get('name', 'País desconhecido')
+                )
+                
+                times_formatados.append({
+                    'id': time.get('id'),
+                    'name': time.get('name'),
+                    'country': pais,
+                    'image_url': time.get('image_url'),
+                    'location': time.get('location'),
+                    'acronym': time.get('acronym')
+                })
+            return times_formatados
+        return []
+    except Exception as e:
+        print(f"Erro ao buscar times: {e}")
+        return []
